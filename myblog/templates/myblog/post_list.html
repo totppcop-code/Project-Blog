@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>{{ user.name }}的文章</title>
+{% endblock title %}
+
+{% block content %}
+<a href="{% url 'post-create' %}"><button class="btn btn-success">新增文章</button></a>
+<hr>
+
+{% if posts %}
+<ul>
+    {% for post in posts %}
+    <li>
+        <a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a>
+        {{ post.create_date|date:'Y-m-d' }}
+        <br>
+        {{ post.body|truncatechars:50 }}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+
+
+
+
+
+{% endblock content %}

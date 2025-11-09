@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ post.title }}
+{% endblock title %}
+
+{% block content %}
+<hr>
+{{ post.body|linebreaks }}
+
+<a href="{% url 'post-update' post.pk %}"><button>編輯</button></a>
+<a href="{% url 'post-delete' post.pk %}"><button>刪除</button></a>
+
+<hr>
+<form method="post" action="{% url 'comment-create' post.pk %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="hidden" name="post" value="{{post.pk}}">
+    <input type="submit" value="留言">
+
+</form>
+
+{% if comments %}
+<ul>
+  {% for comment in comments %}
+  <li>
+    {{ comment.author }} | <span>{{ comment.create_date|date:'Y-m-d H:i' }}</span>
+    
+    <br>{{ comment.body }}</li>
+
+    <a href="{% url 'comment-update' comment.pk %}"><button>編輯</button></a>
+    <a href="{% url 'comment-delete' comment.pk %}"><button>刪除</button></a>
+
+  {% endfor %}
+</ul>
+{% else %}
+<p>無留言</p>
+{% endif %}
+
+
+
+
+
+
+{% endblock content %}

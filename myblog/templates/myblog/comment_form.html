@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <input type="submit" value="確定">
+
+</form>
+<a href="{% url 'post-detail' object.post.pk %}" ><button>取消</button></a>
+
+
+
+{% endblock content %}
