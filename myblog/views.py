@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .forms import PostForm,CommentForm
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+from django.core.paginator import Paginator
 
 class PostListView(ListView):
     model = Post
@@ -16,8 +19,19 @@ class PostDetailView(DetailView):
     
     def get_context_data(self,**kwargs):
         context = super().get_context_data(**kwargs)
+        # 留言區用
         context['form'] = CommentForm()
         context['comments'] = Comment.objects.filter(post=self.object)
+        # 留言分頁用
+        comments = Comment.objects.filter(post=self.object).order_by('-create_date')
+        paginator = Paginator(comments,2)
+
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context['comments'] = page_obj.object_list
+        context['page_obj'] = page_obj
+
         return context
     
 class PostCreateView(CreateView):
@@ -55,9 +69,10 @@ class CommentDetailView(DetailView):
     model = Comment    
 
 
-class CommentCreateView(CreateView):
+class CommentCreateView(SuccessMessageMixin,CreateView):
     model = Comment
     form_class = CommentForm
+    success_message = "新增一則留言"
    
 
     def form_valid(self,form):
@@ -75,16 +90,18 @@ class CommentCreateView(CreateView):
         return reverse_lazy('post-detail',kwargs={'pk':self.object.post.pk})
 
 
-class CommentUpdateView(UpdateView):
+class CommentUpdateView(SuccessMessageMixin,UpdateView):
     model = Comment
     form_class = CommentForm
+    success_message = '更新留言'
 
     def get_success_url(self):
         return reverse_lazy('post-detail',kwargs={'pk':self.object.post.pk})
 
 
-class CommentDeleteView(DeleteView):
+class CommentDeleteView(SuccessMessageMixin,DeleteView):
     model = Comment 
+    success_message = '刪除一則留言'
 
     def get_success_url(self):
         return reverse_lazy('post-detail',kwargs={'pk':self.object.post.pk})

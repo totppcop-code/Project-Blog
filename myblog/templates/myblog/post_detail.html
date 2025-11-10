@@ -8,17 +8,24 @@
 <hr>
 {{ post.body|linebreaks }}
 
-<a href="{% url 'post-update' post.pk %}"><button>編輯</button></a>
-<a href="{% url 'post-delete' post.pk %}"><button>刪除</button></a>
+<a href="{% url 'post-update' post.pk %}" class="btn btn-outline-dark">編輯</a>
+<a href="{% url 'post-delete' post.pk %}" class="btn btn-outline-dark">刪除</a>
 
 <hr>
 <form method="post" action="{% url 'comment-create' post.pk %}">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="hidden" name="post" value="{{post.pk}}">
-    <input type="submit" value="留言">
+    <input type="submit" value="留言" class="btn btn-outline-dark">
 
 </form>
+{% if messages %}
+<ul>
+  {% for message in messages %}
+  <li class="alert alert-warning"> {{ message }} </li>
+  {% endfor %}
+</ul>
+{% endif %}
 
 {% if comments %}
 <ul>
@@ -28,8 +35,8 @@
     
     <br>{{ comment.body }}</li>
 
-    <a href="{% url 'comment-update' comment.pk %}"><button>編輯</button></a>
-    <a href="{% url 'comment-delete' comment.pk %}"><button>刪除</button></a>
+    <a href="{% url 'comment-update' comment.pk %}" class="btn btn-outline-dark">編輯</a>
+    <a href="{% url 'comment-delete' comment.pk %}" class="btn btn-outline-dark">刪除</a>
 
   {% endfor %}
 </ul>
@@ -37,6 +44,25 @@
 <p>無留言</p>
 {% endif %}
 
+<nav aria-label="留言分頁區">
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li class="page-item"><a href="?page=1" class="page-link">第一頁</a></li>
+    <li class="page-item"><a href="?page={{page_obj.previous_page_number}}" class="page-link">上一頁</a></li>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range  %}
+    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+      <a href="?page={{ num }}" class="page-link">{{ num }}頁</a>
+    </li>
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <li class="page-item"><a href="?page={{page_obj.next_page_number}}" class="page-link">下一頁</a></li>
+    <li class="page-item"><a href="?page={{page_obj.paginator.num_pages}}" class="page-link">最後一頁</a></li>
+    {% endif %}
+  </ul>
+</nav>
 
 
 

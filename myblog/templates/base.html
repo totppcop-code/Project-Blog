@@ -10,8 +10,23 @@
 </head>
 
 <body>
-    <h2>我的部落格</h2>
+
+    <h2>部落格</h2>
+    {% if user.is_authenticated %}
+    <p>歡迎{{ user.username }}
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+
+        <input type="submit" value="登出" class="btn btn-outline-dark">
+    </form>
+    </p>
+    {% else %}
+    <a href="{% url 'login' %}" class="btn btn-outline-dark">登入</a>
+    {% endif %}
     <a href="{% url 'post-list' %}">Home</a>
+
+
+
     <br>
     <div class="container">
         {% block title %}{% endblock title %}

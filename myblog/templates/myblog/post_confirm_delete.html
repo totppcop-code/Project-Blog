@@ -9,9 +9,9 @@
 <form method="post">
     {% csrf_token %}
 
-    <input type="submit" value="Confirm">
+    <input type="submit" value="Confirm" class="btn btn-outline-dark">
     
 </form>
-<a href="{% url 'post-detail' post.pk %}"><button>Cancel</button></a>
+<a href="{% url 'post-detail' post.pk %}" class="btn btn-outline-dark">取消</a>
    
 {% endblock content %}

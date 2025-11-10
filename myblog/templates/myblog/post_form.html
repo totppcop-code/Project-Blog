@@ -9,13 +9,13 @@
         {% csrf_token %}
         {{ form.as_p }}
 
-        <input type="submit" value="確定">
+        <input type="submit" value="確定" class="btn btn-outline-dark">
         
     </form>
     {% if object %}
-    <a href="{% url 'post-detail' object.pk %}"><button >取消</button></a>
+    <a href="{% url 'post-detail' object.pk %}" class="btn btn-outline-dark">取消</a>
     {% else %}
-    <a href="{% url 'post-list' %}"><button >取消</button></a>
+    <a href="{% url 'post-list' %}" class="btn btn-outline-dark">取消</a>
     {% endif %}
 
 
