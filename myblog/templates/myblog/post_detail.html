@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load social_share_tags %}
 
 {% block title %}
-  {{ post.title }}
+{{ post.title }}
 {% endblock title %}
 
 {% block content %}
@@ -11,12 +12,48 @@
 <a href="{% url 'post-update' post.pk %}" class="btn btn-outline-dark">編輯</a>
 <a href="{% url 'post-delete' post.pk %}" class="btn btn-outline-dark">刪除</a>
 
+<div class="d-inline-flex align-items-center gap-3 ">
+  <form method="post" action="{% url 'toggle-like' post.pk %}">
+    {% csrf_token %}
+
+    <button type="submit" style="background:none; border:none; padding:0 ;cursor:pointer;">
+      {% if user in post.like.all %}
+      <i class="bi bi-hand-thumbs-up-fill text-warning"></i>{{ post.like.count }}
+      {% else %}
+      <i class="bi bi-hand-thumbs-up"></i>
+      {% endif %}
+    </button>
+  </form>
+
+  <form method="post" action="{% url 'toggle-favorite' post.pk %}">
+    {% csrf_token %}
+
+    <button type="submit" style="background:none; border:none; padding:0 ;cursor:pointer;">
+      {% if user in post.favorite.all %}
+      <i class="bi bi-star-fill text-warning"></i>
+      {% else %}
+      <i class="bi bi-star"></i>
+      {% endif %}
+    </button>
+  </form>
+  <a href="{% share_url 'facebook' request.build_abosolte_url %} target='_blank'">
+    <i class="bi bi-facebook"></i>
+  </a>
+  <a href="{% share_url 'line' request.build_abosolte_url %} target='_blank'">
+    <i class="bi bi-line"></i>
+  </a>
+  <a href="{% share_url 'twitter' request.build_abosolte_url %} target='_blank'">
+    <i class="bi bi-twitter"></i>
+  </a>
+</div>
+
+
 <hr>
 <form method="post" action="{% url 'comment-create' post.pk %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="hidden" name="post" value="{{post.pk}}">
-    <input type="submit" value="留言" class="btn btn-outline-dark">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="hidden" name="post" value="{{post.pk}}">
+  <input type="submit" value="留言" class="btn btn-outline-dark">
 
 </form>
 {% if messages %}
@@ -27,31 +64,35 @@
 </ul>
 {% endif %}
 
-{% if comments %}
-<ul>
-  {% for comment in comments %}
-  <li>
-    {{ comment.author }} | <span>{{ comment.create_date|date:'Y-m-d H:i' }}</span>
-    
-    <br>{{ comment.body }}</li>
+<div class="container">
+  {% if comments %}
+  <ul>
+    {% for comment in comments %}
+    <li class="mt-4">
+      {{ comment.author }} | <span>{{ comment.create_date|date:'Y-m-d H:i' }}</span>
+
+      <br>{{ comment.body }}
+    </li>
 
     <a href="{% url 'comment-update' comment.pk %}" class="btn btn-outline-dark">編輯</a>
     <a href="{% url 'comment-delete' comment.pk %}" class="btn btn-outline-dark">刪除</a>
 
-  {% endfor %}
-</ul>
-{% else %}
-<p>無留言</p>
-{% endif %}
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>無留言</p>
+  {% endif %}
+
+
 
 <nav aria-label="留言分頁區">
-  <ul class="pagination">
+  <ul class="pagination mt-4">
     {% if page_obj.has_previous %}
     <li class="page-item"><a href="?page=1" class="page-link">第一頁</a></li>
     <li class="page-item"><a href="?page={{page_obj.previous_page_number}}" class="page-link">上一頁</a></li>
     {% endif %}
 
-    {% for num in page_obj.paginator.page_range  %}
+    {% for num in page_obj.paginator.page_range %}
     <li class="page-item {% if page_obj.number == num %}active{% endif %}">
       <a href="?page={{ num }}" class="page-link">{{ num }}頁</a>
     </li>
@@ -63,8 +104,9 @@
     {% endif %}
   </ul>
 </nav>
+</div>
 
-
+</div>
 
 
 

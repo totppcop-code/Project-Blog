@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Comment
 from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -7,6 +7,8 @@ from .forms import PostForm,CommentForm
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
+from django.views import View
+
 
 class PostListView(ListView):
     model = Post
@@ -107,3 +109,29 @@ class CommentDeleteView(SuccessMessageMixin,DeleteView):
         return reverse_lazy('post-detail',kwargs={'pk':self.object.post.pk})
 
 
+class ToggleLikeView(View):
+    def post(self, request, pk):
+        post = get_object_or_404(Post,pk=pk)
+        if request.user in post.like.all():
+            post.like.remove(request.user)
+        else:
+            post.like.add(request.user)
+        return redirect(post.get_absolute_url())
+    
+class ToggleFavoriteView(View):
+    def post(self, request, pk):
+        post = get_object_or_404(Post,pk=pk)
+        if request.user in post.favorite.all():
+            post.favorite.remove(request.user)
+        else:
+            post.favorite.add(request.user)
+        return redirect(post.get_absolute_url())
+    
+class ToggleShareView(View):
+    def post(self, request, pk):
+        post = get_object_or_404(Post,pk=pk)
+        if request.user in post.share.all():
+            post.share.remove(request.user)
+        else:
+            post.share.add(request.user)
+        return redirect(post.get_absolute_url())
