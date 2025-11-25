@@ -4,7 +4,7 @@ from django.urls import reverse
 
 class Post(models.Model):
     title = models.CharField(max_length=60)
-    body = models.TextField(max_length=255)
+    body = models.TextField(max_length=500)
     create_date = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
     like = models.ManyToManyField(User, related_name='like_posts', blank=True)
